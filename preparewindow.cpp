@@ -2,6 +2,7 @@
 #include "ui_preparewindow.h"
 #include <QScreen>
 #include <QNetworkInterface>
+#include <QWebSocketServer>
 
 #include <windows.h>
 #include "qrdialog.h"
@@ -20,6 +21,11 @@ MainWindow::MainWindow(QWidget *parent)
     // setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
 
     connect(ui->qrButton, &QPushButton::clicked, this, &MainWindow::showQR);
+
+    QWebSocketServer *server = new QWebSocketServer(QStringLiteral("PixLink server"), QWebSocketServer::NonSecureMode, this);
+    if(server->listen(QHostAddress::Any, 8888)) {
+        qDebug() << "server started on port " << server->serverPort();
+    }
 }
 
 void MainWindow::showEvent(QShowEvent *event) {
@@ -77,7 +83,7 @@ QString MainWindow::getLocalIP()
 {
     const auto interfaces = QNetworkInterface::allInterfaces();
 
-    for(const auto i : interfaces) {
+    for(const auto &i : interfaces) {
         auto flags = i.flags();
 
         // loopback interfaces: 127.0.0.1 / ::1 - are not useful
