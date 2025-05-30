@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/imgs">
+        <file>resources/batteryStatus.png</file>
+        <file>resources/bluetoothIcon.png</file>
+        <file>resources/filesIcon.png</file>
+        <file>resources/hotspotIcon.png</file>
+        <file>resources/manualIcon.png</file>
+        <file>resources/mediaIcon.png</file>
+        <file>resources/networkStatus.png</file>
+        <file>resources/notificationIcon.png</file>
+        <file>resources/qrIcon.png</file>
+        <file>resources/readAllIcon.png</file>
+        <file>resources/remoteConnectIcon.png</file>
+        <file>resources/uploadIcon.png</file>
+        <file>resources/wifiIcon.png</file>
+        <file>resources/wifiStatus.png</file>
+        <file>resources/pixelFrame.png</file>
+        <file>resources/wallpaper.png</file>
+    </qresource>
+</RCC>
