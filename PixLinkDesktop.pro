@@ -14,18 +14,23 @@ CONFIG += c++17
 include(thirdparty/qtqrcodegenerator/Qt-QrCodeGenerator.pri)
 
 SOURCES += \
+    main.cpp \
+    mainpage.cpp \
     mainwindow.cpp \
-    preparewindow.cpp \
+    preparepage.cpp \
     qrdialog.cpp \
 
 HEADERS += \
-    preparewindow.h \
+    mainpage.h \
+    mainwindow.h \
+    preparepage.h \
     qrdialog.h \
     structs.h \
 
 FORMS += \
+    mainpage.ui \
     mainwindow.ui \
-    preparewindow.ui
+    preparepage.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

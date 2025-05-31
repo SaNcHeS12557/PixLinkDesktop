@@ -1,12 +1,16 @@
-#ifndef PREPAREWINDOW_H
-#define PREPAREWINDOW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include "mainpage.h"
+#include "preparepage.h"
 
 #include <QMainWindow>
 #include <QWebSocketServer>
+#include <QStackedWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 QT_END_NAMESPACE
 
@@ -17,20 +21,22 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
 protected:
     QWebSocketServer *server;
+    preparepage *preparePage;
+    mainpage *mainPage;
 
     void showEvent(QShowEvent *event) override;
-    void generateQR();
 
     QString getLocalIP();  // computer ip
     QString createConnectionURL(); //<ip>:<port>
 
 public slots:
-    void showQR();
     void onNewConnection();
 
 private:
     Ui::MainWindow *ui;
+
 };
-#endif // PREPAREWINDOW_H
+#endif // MAINWINDOW_H
