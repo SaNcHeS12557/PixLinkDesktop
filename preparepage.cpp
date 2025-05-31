@@ -7,7 +7,7 @@
 #include <QSettings>
 #include <QWebSocketServer>
 
-preparepage::preparepage(QWidget *parent) : QMainWindow(parent),
+preparepage::preparepage(QWidget *parent) : QWidget(parent),
     ui(new Ui::PreparePage)
 {
     ui->setupUi(this);

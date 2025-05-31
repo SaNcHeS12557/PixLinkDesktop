@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>PreparePage</class>
- <widget class="QMainWindow" name="PreparePage">
+ <widget class="QWidget" name="PreparePage">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,53 +10,55 @@
     <height>460</height>
    </rect>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>675</width>
+    <height>460</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">border-radius: 60px;</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>50</y>
-      <width>401</width>
-      <height>121</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>32</pointsize>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="text">
-     <string>Hej! Let's connect your phone</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="qrButton">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>220</y>
-      <width>191</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-    background-color: #2A2A2A;
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>50</y>
+     <width>401</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>32</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Hej! Let's connect your phone</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="manualButton">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>220</y>
+     <width>191</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	background-color: rgba(50, 50, 50, 150); 
     color: #BEBEBE; 
     border-radius: 20px;
     font-family: &quot;Segoe UI&quot;;
@@ -75,68 +77,67 @@ QPushButton:pressed {
     background-color: #48484A;
 }
 </string>
-    </property>
-    <property name="text">
-     <string>Connect 
-via QR</string>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/imgs/resources/qrIcon.png</normaloff>:/imgs/resources/qrIcon.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>45</width>
-      <height>45</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="manualButton">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>220</y>
-      <width>191</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-    background-color: #2A2A2A;
-    color: #BEBEBE; 
-    border-radius: 20px;
-    font-family: &quot;Segoe UI&quot;;
-    font-size: 15pt;
-    qproperty-iconSize: 45px 45px;
-	text-align: left;
-	padding: 12px 24px 12px 16px;
-
-}
-
-QPushButton:hover {
-    background-color: #3A3A3C;
-}
-
-QPushButton:pressed {
-    background-color: #48484A;
-}
-</string>
-    </property>
-    <property name="text">
-     <string>Connect 
+   </property>
+   <property name="text">
+    <string>Connect 
 manually</string>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/imgs/resources/manualIcon.png</normaloff>:/imgs/resources/manualIcon.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>45</width>
-      <height>45</height>
-     </size>
-    </property>
-   </widget>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/resources/manualIcon.png</normaloff>:/imgs/resources/manualIcon.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>45</width>
+     <height>45</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="qrButton">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>220</y>
+     <width>191</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	background-color: rgba(50, 50, 50, 150); 
+    color: #BEBEBE; 
+    border-radius: 20px;
+    font-family: &quot;Segoe UI&quot;;
+    font-size: 15pt;
+    qproperty-iconSize: 45px 45px;
+	text-align: left;
+	padding: 12px 24px 12px 16px;
+
+}
+
+QPushButton:hover {
+    background-color: #3A3A3C;
+}
+
+QPushButton:pressed {
+    background-color: #48484A;
+}
+</string>
+   </property>
+   <property name="text">
+    <string>Connect 
+via QR</string>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/resources/qrIcon.png</normaloff>:/imgs/resources/qrIcon.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>45</width>
+     <height>45</height>
+    </size>
+   </property>
   </widget>
  </widget>
  <resources>

@@ -12,12 +12,12 @@ namespace Ui {
 }
 QT_END_NAMESPACE
 
-class preparepage : public QMainWindow
+class preparepage : public QWidget
 {
     Q_OBJECT
 
 public:
-    preparepage(QWidget *parent = nullptr);
+    explicit preparepage(QWidget *parent = nullptr);
     ~preparepage();
 
     QPushButton* getQRButton();

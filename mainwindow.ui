@@ -26,6 +26,12 @@
       <height>460</height>
      </rect>
     </property>
+    <property name="maximumSize">
+     <size>
+      <width>675</width>
+      <height>460</height>
+     </size>
+    </property>
     <widget class="QWidget" name="page"/>
     <widget class="QWidget" name="page_2"/>
    </widget>

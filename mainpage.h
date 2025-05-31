@@ -10,12 +10,12 @@ namespace Ui {
 }
 QT_END_NAMESPACE
 
-class mainpage : public QMainWindow
+class mainpage : public QWidget
 {
     Q_OBJECT
 
 public:
-    mainpage(QWidget *parent = nullptr);
+    explicit mainpage(QWidget *parent = nullptr);
     ~mainpage();
 
 private:

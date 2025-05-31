@@ -33,8 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (preparePage && mainPage) {
         ui->stackedWidget->addWidget(preparePage);
-        ui->stackedWidget->addWidget(mainPage->takeCentralWidget());
+        // ui->stackedWidget->addWidget(mainPage->takeCentralWidget());
 
+        ui->stackedWidget->addWidget(mainPage);
         ui->stackedWidget->setCurrentWidget(preparePage);
     }
 
@@ -102,7 +103,7 @@ void MainWindow::onNewConnection()
     qDebug() << "mobile client new connection from" << client->peerAddress().toString();
 
     if(mainPage) {
-        ui->stackedWidget->setCurrentWidget(mainPage->takeCentralWidget());
+        ui->stackedWidget->setCurrentWidget(mainPage);
     }
 }
 
