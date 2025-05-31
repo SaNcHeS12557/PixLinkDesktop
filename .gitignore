@@ -88,5 +88,7 @@ compile_commands.json
 *.cxxflags
 *.cflags
 
+# dev config
+config.ini
 
 # End of https://www.toptal.com/developers/gitignore/api/qt,qtcreator

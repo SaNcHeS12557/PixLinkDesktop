@@ -6,7 +6,7 @@
 
 // using qrcodegen::QrCode;
 
-QRDialog::QRDialog(const QString &url, QWidget *parent)
+QRDialog::QRDialog(const QString &url, QWidget *parent, QWebSocketServer *server)
     : QDialog(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -20,6 +20,10 @@ QRDialog::QRDialog(const QString &url, QWidget *parent)
     resize(300,300);
 
     generateQRCode(url);
+
+    if(server) {
+        connect(server, &QWebSocketServer::newConnection, this, &QRDialog::handleClientConnected);
+    }
 }
 
 void QRDialog::generateQRCode(const QString &text)
@@ -28,4 +32,10 @@ void QRDialog::generateQRCode(const QString &text)
     QImage qrCodeImage = generator.generateQr(text);
 
     qrLabel->setPixmap(QPixmap::fromImage(qrCodeImage.scaled(500,500)));
+}
+
+void QRDialog::handleClientConnected()
+{
+    qDebug() << "Mobile client connected!!";
+    accept();
 }

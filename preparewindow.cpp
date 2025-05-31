@@ -2,7 +2,9 @@
 #include "ui_preparewindow.h"
 #include <QScreen>
 #include <QNetworkInterface>
-#include <QWebSocketServer>
+// #include <QWebSocketServer>
+#include <QWebSocket>
+#include <QSettings>
 
 #include <windows.h>
 #include "qrdialog.h"
@@ -22,9 +24,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->qrButton, &QPushButton::clicked, this, &MainWindow::showQR);
 
-    QWebSocketServer *server = new QWebSocketServer(QStringLiteral("PixLink server"), QWebSocketServer::NonSecureMode, this);
+    server = new QWebSocketServer(QStringLiteral("PixLink server"), QWebSocketServer::NonSecureMode, this);
     if(server->listen(QHostAddress::Any, 8888)) {
         qDebug() << "server started on port " << server->serverPort();
+        // connect(server, &QWebSocketServer::newConnection,
+        //         this, &MainWindow::onNewConnection);
+
     }
 }
 
@@ -71,12 +76,25 @@ void MainWindow::showEvent(QShowEvent *event) {
 
 void MainWindow::showQR()
 {
-    QString url = QString("ws://%1:%2")
-                       .arg(getLocalIP())
-                       .arg(8888);
+    // MAIN:
+    // QString url = QString("ws://%1:%2")
+    //                    .arg(getLocalIP())
+    //                    .arg(8888);
 
-    QRDialog *dialog = new QRDialog(url, this);
+    // TODO : REMOVE : TESTING (using ngrok):
+    QString configPath = "C:\\Users\\rubic\\OneDrive\\Desktop\\Projects\\QT\\PixLinkDesktop\\config.ini";
+    QString url = QSettings(configPath, QSettings::IniFormat).value("network/ws_url").toString();
+    qDebug() << "QR URL:" << url;
+
+    QRDialog *dialog = new QRDialog(url, this, server);
     dialog->exec();
+}
+
+void MainWindow::onNewConnection()
+{
+    QWebSocket *client = server->nextPendingConnection();
+
+    qDebug() << "mobile client new connection from" << client->peerAddress().toString();
 }
 
 QString MainWindow::getLocalIP()

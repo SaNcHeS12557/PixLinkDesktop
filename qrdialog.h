@@ -5,14 +5,18 @@
 #include <QWidget>
 #include <QDialog>
 #include <QLabel>
+#include <QWebSocketServer>
 
 class QRDialog : public QDialog
 {
 public:
     QLabel *qrLabel;
 
-    QRDialog(const QString &url, QWidget *parent = nullptr);
+    QRDialog(const QString &url, QWidget *parent = nullptr, QWebSocketServer *server = nullptr);
     void generateQRCode(const QString &text);
+
+public slots:
+    void handleClientConnected();
 };
 
 #endif // QRDIALOG_H

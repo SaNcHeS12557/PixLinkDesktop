@@ -2,6 +2,7 @@
 #define PREPAREWINDOW_H
 
 #include <QMainWindow>
+#include <QWebSocketServer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,8 +17,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 protected:
+    QWebSocketServer *server;
+
     void showEvent(QShowEvent *event) override;
     void generateQR();
 
@@ -26,6 +28,7 @@ protected:
 
 public slots:
     void showQR();
+    void onNewConnection();
 
 private:
     Ui::MainWindow *ui;
