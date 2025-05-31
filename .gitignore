@@ -88,6 +88,17 @@ compile_commands.json
 *.cxxflags
 *.cflags
 
+# build files
+build/
+*.exe
+*.o
+*.obj
+*.user
+*.pro.user
+*.log
+*.cache
+*.qtc_clangd/
+
 # dev config
 config.ini
 
