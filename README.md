@@ -21,11 +21,11 @@ PixLink is an advanced synchronization tool between **Windows** and **Android** 
 2. Install and launch the application
 3. Pair with your Android device
 
-## 🔧 Technologies Used
-- **Android:** Java/Kotlin, Jetpack Libraries, Foreground Service
-- **Windows:** Java Desktop API
-- **Networking:** WebSocket, OkHttp
-- **UI/UX:** JavaFX UI
+## 🔧 Technologies Used (some planned to use)
+- **Android:** Java/Kotlin, Jetpack Libraries, Foreground Service, MediaCodec, MediaProjection
+- **Windows:** QT, FFmpeg, OpenGL
+- **Networking:** WebSocket
+- **UI/UX:** AS Layout Editor, QT Designer
 
 ## 🛠️ Setup & Usage
 1. **Ensure both devices are connected to the same network** (Wi-Fi or Bluetooth tethering)
@@ -33,9 +33,22 @@ PixLink is an advanced synchronization tool between **Windows** and **Android** 
 3. **Start using PixLink** for file transfer, notifications, and remote control features
 
 ## 🚧 Roadmap
-- [ ] Add support for clipboard synchronization
-- [ ] Enable remote Android screen mirroring
-- [ ] (Coming soon!)
+
+### ✅ Completed
+- [x] Established WebSocket connection between devices via QR
+- [x] Smartphone metrics monitoring (Bluetooth, network, Wi-Fi, etc.)
+
+### 🔧 In Progress
+- [ ] Control Bluetooth, Wi-Fi, hotspot toggles remotely  
+- [ ] Mouse and keyboard input from smartphone to PC (HID emulation)  
+- [ ] Clipboard synchronization
+- [ ] File/link sharing between devices  
+
+### 📅 Planned
+- [ ] Remote access to smartphone messages  
+- [ ] Remote access to smartphone media files  
+- [ ] Remote access to smartphone file system
+- [ ] Remote screen mirroring from smartphone
 
 ## 📜 License
 This project is licensed under the **GNU Public License**.
