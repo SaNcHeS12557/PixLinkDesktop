@@ -21,7 +21,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 protected:
     QWebSocketServer *server;
     preparepage *preparePage;
@@ -34,6 +33,7 @@ protected:
 
 public slots:
     void onNewConnection();
+    void onTextMessageReceived(const QString &message);
 
 private:
     Ui::MainWindow *ui;

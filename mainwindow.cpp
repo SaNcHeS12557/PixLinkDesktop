@@ -11,6 +11,8 @@
 // #include <QWebSocketServer>
 #include <QWebSocket>
 #include <QSettings>
+#include <QJsonParseError>
+#include <QJsonObject>
 
 #include <windows.h>
 #include "structs.h"
@@ -99,12 +101,40 @@ void MainWindow::showEvent(QShowEvent *event) {
 void MainWindow::onNewConnection()
 {
     QWebSocket *client = server->nextPendingConnection();
-
     qDebug() << "mobile client new connection from" << client->peerAddress().toString();
+
+    connect(client, &QWebSocket::textMessageReceived, this, &MainWindow::onTextMessageReceived);
 
     if(mainPage) {
         ui->stackedWidget->setCurrentWidget(mainPage);
     }
+}
+
+void MainWindow::onTextMessageReceived(const QString &message)
+{
+    qDebug() << "[Received]" << message;
+
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8(), &parseError);
+
+    if(parseError.error != QJsonParseError::NoError) {
+        qDebug() << "JSON parse error:" << parseError.errorString();
+        return;
+    }
+
+    if(!doc.isObject()) {
+        qDebug() << "Received message is not a JSON object";
+        return;
+    }
+
+    const QJsonObject root = doc.object();
+    QString type = root["type"].toString();
+
+    if(type == "device_status") {
+        QJsonObject data = root["data"].toObject();
+        // TODO: handle device status updates
+    }
+
 }
 
 QString MainWindow::getLocalIP()
