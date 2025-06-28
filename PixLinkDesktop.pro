@@ -14,6 +14,7 @@ CONFIG += c++17
 include(thirdparty/qtqrcodegenerator/Qt-QrCodeGenerator.pri)
 
 SOURCES += \
+    clipboardmanager.cpp \
     main.cpp \
     mainpage.cpp \
     mainwindow.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
     qrdialog.cpp \
 
 HEADERS += \
+    clipboardmanager.h \
     mainpage.h \
     mainwindow.h \
     preparepage.h \

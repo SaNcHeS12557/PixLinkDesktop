@@ -247,7 +247,7 @@ QLabel {
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>240</x>
@@ -651,7 +651,7 @@ QPushButton:pressed {
      <x>490</x>
      <y>10</y>
      <width>161</width>
-     <height>81</height>
+     <height>82</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -706,7 +706,7 @@ QPushButton:pressed {
   <zorder>wallpaperLabel</zorder>
   <zorder>statusBar</zorder>
   <zorder>frameLabel</zorder>
-  <zorder></zorder>
+  <zorder>layoutWidget</zorder>
   <zorder>verticalLayoutWidget</zorder>
  </widget>
  <resources>

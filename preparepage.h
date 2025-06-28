@@ -6,6 +6,9 @@
 #include <QMainWindow>
 #include <QPushButton>
 
+// PAGE THAT IS DISPLAYED IN THE MAIN WINDOW
+// PAGE WITH THE PREPARATION FUNCTIONALITY
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class PreparePage;

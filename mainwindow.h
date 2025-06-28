@@ -38,5 +38,6 @@ public slots:
 private:
     Ui::MainWindow *ui;
 
+    class clipboardmanager *clipboardManager;
 };
 #endif // MAINWINDOW_H

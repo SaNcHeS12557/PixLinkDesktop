@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QMainWindow>
 
+// PAGE THAT IS DISPLAYED IN THE MAIN WINDOW
+// PAGE WITH THE MAIN FUNCTIONALITY
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class MainPage;
