@@ -14,7 +14,7 @@ class clipboardmanager : public QObject
     Q_OBJECT
 
 public:
-    clipboardmanager();
+    clipboardmanager(QObject *parent = nullptr);
     ~clipboardmanager();
 
     void start();

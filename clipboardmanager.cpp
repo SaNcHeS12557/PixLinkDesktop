@@ -1,22 +1,26 @@
 #include "clipboardmanager.h"
 
-clipboardmanager::clipboardmanager() {
+clipboardmanager::clipboardmanager(QObject *parent)
+    : QObject(parent)
+{
     setClipboard(QGuiApplication::clipboard());
     setIsActive(false);
 }
 
-clipboardmanager::~clipboardmanager() {
-
-}
+clipboardmanager::~clipboardmanager() {}
 
 void clipboardmanager::start() {
+    if(isActive) return;
     connect(getClipboard(), &QClipboard::changed, this, &clipboardmanager::onClipboardChanged);
     setIsActive(true);
+    qDebug() << "Clipboard manager started!";
 }
 
 void clipboardmanager::stop() {
+    if(!isActive) return;
     disconnect(getClipboard(), &QClipboard::changed, this, &clipboardmanager::onClipboardChanged);
     setIsActive(false);
+        qDebug() << "Clipboard manager stopped!";
 }
 
 QClipboard* clipboardmanager::getClipboard()
@@ -64,5 +68,6 @@ void clipboardmanager::onClipboardChanged()
         jsonData["data"] = mimeData->text();
     }
 
+    qDebug() << "Clipboard changed -> data ready to send!";
     emit clipboardDataReady(jsonData);
 }

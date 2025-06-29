@@ -1,33 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "mainpage.h"
-// #include "ui_mainpage.h"
-#include "preparepage.h"
-// #include "ui_preparepage.h"
-
-#include <QScreen>
-#include <QNetworkInterface>
-// #include <QWebSocketServer>
-#include <QWebSocket>
-#include <QSettings>
-#include <QJsonParseError>
-#include <QJsonObject>
-
-#include <windows.h>
-#include "structs.h"
-
 #pragma comment(lib, "user32.lib")
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , client(nullptr)
 {
     ui->setupUi(this);
 
     // transparent background & blur effect
     setAttribute(Qt::WA_TranslucentBackground);
-    // setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
 
     // pages:
     preparePage = new preparepage(this); // preparing connection between devices
@@ -35,14 +19,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (preparePage && mainPage) {
         ui->stackedWidget->addWidget(preparePage);
-        // ui->stackedWidget->addWidget(mainPage->takeCentralWidget());
-
         ui->stackedWidget->addWidget(mainPage);
+
+        // TODO: if no websocket -> preparePage, else mainPage
         ui->stackedWidget->setCurrentWidget(preparePage);
     }
-
-    // TODO : UI - PREPAREWINDOW
-    // connect(preparePage, &QPushButton::clicked, this, &PrepareWindow::showQR);
 
     server = new QWebSocketServer(QStringLiteral("PixLink server"), QWebSocketServer::NonSecureMode, this);
     if(server->listen(QHostAddress::Any, 8888)) {
@@ -55,6 +36,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(server, &QWebSocketServer::newConnection,
             this, &MainWindow::onNewConnection);
+
+    clipboardManager = new clipboardmanager(this);
+    connect(clipboardManager, &clipboardmanager::clipboardDataReady, this, &MainWindow::sendData);
+    clipboardManager->start();
 }
 
 void MainWindow::showEvent(QShowEvent *event) {
@@ -100,10 +85,12 @@ void MainWindow::showEvent(QShowEvent *event) {
 
 void MainWindow::onNewConnection()
 {
-    QWebSocket *client = server->nextPendingConnection();
+    // QWebSocket *client = server->nextPendingConnection();
+    client = server->nextPendingConnection();
     qDebug() << "mobile client new connection from" << client->peerAddress().toString();
 
     connect(client, &QWebSocket::textMessageReceived, this, &MainWindow::onTextMessageReceived);
+    // TODO: disconnect client
 
     if(mainPage) {
         ui->stackedWidget->setCurrentWidget(mainPage);
@@ -160,6 +147,18 @@ QString MainWindow::getLocalIP()
     }
 
     return "127.0.0.1"; // no valid ip :(
+}
+
+void MainWindow::sendData(const QJsonObject &data)
+{
+    if(client && client->isValid()) {
+        QString jsonString = QString::fromUtf8(
+            QJsonDocument(data)
+                .toJson(QJsonDocument::Compact));
+
+        client->sendTextMessage(jsonString);
+        qDebug() << "Data send to mobile client!";
+    }
 }
 
 MainWindow::~MainWindow()
