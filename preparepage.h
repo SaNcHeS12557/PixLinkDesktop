@@ -5,6 +5,11 @@
 #include <QWidget>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QString>
+#include <QDebug>
+#include <QSettings>
+
+#include "qrdialog.h"
 
 // PAGE THAT IS DISPLAYED IN THE MAIN WINDOW
 // PAGE WITH THE PREPARATION FUNCTIONALITY

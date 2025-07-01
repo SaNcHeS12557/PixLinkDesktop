@@ -1,49 +1,49 @@
 #include "clipboardmanager.h"
 
-clipboardmanager::clipboardmanager(QObject *parent)
+ClipboardManager::ClipboardManager(QObject *parent)
     : QObject(parent)
 {
     setClipboard(QGuiApplication::clipboard());
     setIsActive(false);
 }
 
-clipboardmanager::~clipboardmanager() {}
+ClipboardManager::~ClipboardManager() {}
 
-void clipboardmanager::start() {
+void ClipboardManager::start() {
     if(isActive) return;
-    connect(getClipboard(), &QClipboard::changed, this, &clipboardmanager::onClipboardChanged);
+    connect(getClipboard(), &QClipboard::changed, this, &ClipboardManager::onClipboardChanged);
     setIsActive(true);
     qDebug() << "Clipboard manager started!";
 }
 
-void clipboardmanager::stop() {
+void ClipboardManager::stop() {
     if(!isActive) return;
-    disconnect(getClipboard(), &QClipboard::changed, this, &clipboardmanager::onClipboardChanged);
+    disconnect(getClipboard(), &QClipboard::changed, this, &ClipboardManager::onClipboardChanged);
     setIsActive(false);
         qDebug() << "Clipboard manager stopped!";
 }
 
-QClipboard* clipboardmanager::getClipboard()
+QClipboard* ClipboardManager::getClipboard()
 {
     return clipboard;
 }
 
-void clipboardmanager::setClipboard(QClipboard *newClipboard)
+void ClipboardManager::setClipboard(QClipboard *newClipboard)
 {
     clipboard = newClipboard;
 }
 
-bool clipboardmanager::getIsActive() const
+bool ClipboardManager::getIsActive() const
 {
     return isActive;
 }
 
-void clipboardmanager::setIsActive(bool newIsActive)
+void ClipboardManager::setIsActive(bool newIsActive)
 {
     isActive = newIsActive;
 }
 
-void clipboardmanager::onClipboardChanged()
+void ClipboardManager::onClipboardChanged()
 {
     const QMimeData* mimeData = getClipboard()->mimeData();
     if(!mimeData) return;

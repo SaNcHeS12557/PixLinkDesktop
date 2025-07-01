@@ -9,13 +9,13 @@
 #include <QImage>
 #include <QBuffer>
 
-class clipboardmanager : public QObject
+class ClipboardManager : public QObject
 {
     Q_OBJECT
 
 public:
-    clipboardmanager(QObject *parent = nullptr);
-    ~clipboardmanager();
+    ClipboardManager(QObject *parent = nullptr);
+    ~ClipboardManager();
 
     void start();
     void stop();

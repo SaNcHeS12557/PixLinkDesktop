@@ -60,9 +60,9 @@ QLabel {
       <height>31</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="networksLayout">
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="wifiIconLabel">
        <property name="maximumSize">
         <size>
          <width>19</width>
@@ -81,7 +81,7 @@ QLabel {
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="networkIconLabel">
        <property name="maximumSize">
         <size>
          <width>19</width>
@@ -100,7 +100,7 @@ QLabel {
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="networkIconLabelSec">
        <property name="maximumSize">
         <size>
          <width>19</width>
@@ -129,9 +129,9 @@ QLabel {
       <height>32</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="batteryLayout">
      <item>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="timeIconLabel">
        <property name="maximumSize">
         <size>
          <width>30</width>
@@ -150,7 +150,7 @@ QLabel {
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="timeLabel">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -654,7 +654,7 @@ QPushButton:pressed {
      <height>82</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="messagesLayout">
     <item>
      <widget class="QPushButton" name="readAllButton">
       <property name="maximumSize">

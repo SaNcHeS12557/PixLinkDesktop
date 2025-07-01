@@ -1,11 +1,5 @@
 #include "preparepage.h"
 #include "ui_preparepage.h"
-#include "qrdialog.h"
-
-#include <QString>
-#include <QDebug>
-#include <QSettings>
-#include <QWebSocketServer>
 
 preparepage::preparepage(QWidget *parent) : QWidget(parent),
     ui(new Ui::PreparePage)

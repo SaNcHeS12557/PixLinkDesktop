@@ -19,6 +19,7 @@ SOURCES += \
     mainpage.cpp \
     mainwindow.cpp \
     preparepage.cpp \
+    protocolhandler.cpp \
     qrdialog.cpp \
 
 HEADERS += \
@@ -26,6 +27,8 @@ HEADERS += \
     mainpage.h \
     mainwindow.h \
     preparepage.h \
+    protocoldefs.h \
+    protocolhandler.h \
     qrdialog.h \
     structs.h \
 

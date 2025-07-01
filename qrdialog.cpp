@@ -1,8 +1,4 @@
 #include "qrdialog.h"
-#include <QrCodeGenerator.h>
-
-#include <QLabel>
-#include <QVBoxLayout>
 
 // using qrcodegen::QrCode;
 
@@ -36,6 +32,6 @@ void QRDialog::generateQRCode(const QString &text)
 
 void QRDialog::handleClientConnected()
 {
-    qDebug() << "Mobile client connected!!";
+    qDebug() << "Mobile client connected!";
     accept();
 }

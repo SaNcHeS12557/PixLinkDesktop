@@ -6,6 +6,8 @@
 #include <QDialog>
 #include <QLabel>
 #include <QWebSocketServer>
+#include <QrCodeGenerator.h>
+#include <QVBoxLayout>
 
 class QRDialog : public QDialog
 {

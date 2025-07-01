@@ -37,9 +37,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(server, &QWebSocketServer::newConnection,
             this, &MainWindow::onNewConnection);
 
-    clipboardManager = new clipboardmanager(this);
-    connect(clipboardManager, &clipboardmanager::clipboardDataReady, this, &MainWindow::sendData);
-    clipboardManager->start();
+    clipboardManager = new ClipboardManager(this);
+    connect(clipboardManager, &ClipboardManager::clipboardDataReady, this, &MainWindow::sendData);
+
+    protocolHandler = new ProtocolHandler(this);
+    connect(protocolHandler, &ProtocolHandler::mouseMoved, this, &MainWindow::onMouseMove);
 }
 
 void MainWindow::showEvent(QShowEvent *event) {
@@ -61,9 +63,9 @@ void MainWindow::showEvent(QShowEvent *event) {
 
     DWORD color =
         (tint.alpha() << 24) |
-        (tint.red()   << 16) |
+        (tint.blue()   << 16) |
         (tint.green() << 8 ) |
-        (tint.blue());
+        (tint.red());
 
 
     AccentEffectConfig config = {
@@ -85,16 +87,20 @@ void MainWindow::showEvent(QShowEvent *event) {
 
 void MainWindow::onNewConnection()
 {
-    // QWebSocket *client = server->nextPendingConnection();
     client = server->nextPendingConnection();
     qDebug() << "mobile client new connection from" << client->peerAddress().toString();
 
     connect(client, &QWebSocket::textMessageReceived, this, &MainWindow::onTextMessageReceived);
-    // TODO: disconnect client
+    // TODO: disconnect
+
+    connect(client, &QWebSocket::binaryMessageReceived, protocolHandler, &ProtocolHandler::parseMessage);
+    // TODO: disconnect
 
     if(mainPage) {
         ui->stackedWidget->setCurrentWidget(mainPage);
     }
+
+    clipboardManager->start();
 }
 
 void MainWindow::onTextMessageReceived(const QString &message)
@@ -115,13 +121,37 @@ void MainWindow::onTextMessageReceived(const QString &message)
     }
 
     const QJsonObject root = doc.object();
-    QString type = root["type"].toString();
+    QString type = root[QStringLiteral("type")].toString();
 
-    if(type == "device_status") {
-        QJsonObject data = root["data"].toObject();
+    if(type == QStringLiteral("device_status")) {
+        QJsonObject data = root[QStringLiteral("data")].toObject();
         // TODO: handle device status updates
     }
 
+}
+
+void MainWindow::onMouseMove(qint16 dx, qint16 dy)
+{
+
+    qDebug() << "dx: " << dx << " dy: " << dy;
+}
+
+void MainWindow::onZoomOperation(quint8 zoomType, quint8 zoomLevel)
+{
+
+    qDebug() << "zoomtype: " << zoomType << " level: " << zoomLevel;
+}
+
+void MainWindow::onScrollOperation(qint16 dx, qint16 dy)
+{
+
+    qDebug() << "dx: " << dx << " dy: " << dy;
+}
+
+void MainWindow::onClickOperation(quint8 buttonType)
+{
+
+    qDebug() << "buttontype: " << buttonType;
 }
 
 QString MainWindow::getLocalIP()
@@ -157,7 +187,7 @@ void MainWindow::sendData(const QJsonObject &data)
                 .toJson(QJsonDocument::Compact));
 
         client->sendTextMessage(jsonString);
-        qDebug() << "Data send to mobile client!";
+        qDebug() << "Data sent to mobile client!";
     }
 }
 

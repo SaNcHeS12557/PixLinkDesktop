@@ -16,7 +16,8 @@
 #include <QSettings>
 #include <QJsonParseError>
 #include <QJsonObject>
-#include <clipboardmanager.h>
+#include "clipboardmanager.h"
+#include "protocolhandler.h"
 
 #include <windows.h>
 #include "structs.h"
@@ -38,23 +39,24 @@ public:
 protected:
     QWebSocketServer *server;
     QWebSocket *client;
-
     preparepage *preparePage;
     mainpage *mainPage;
-
     void showEvent(QShowEvent *event) override;
-
-    QString getLocalIP();  // computer ip
-    QString createConnectionURL(); //<ip>:<port>
+    QString getLocalIP();
+    QString createConnectionURL();
     void sendData(const QJsonObject &data);
 
 public slots:
     void onNewConnection();
     void onTextMessageReceived(const QString &message);
+    void onMouseMove(qint16 dx, qint16 dy);
+    void onZoomOperation(quint8 zoomType, quint8 zoomLevel);
+    void onScrollOperation(qint16 dx, qint16 dy);
+    void onClickOperation(quint8 buttonType);
 
 private:
     Ui::MainWindow *ui;
-
-    class clipboardmanager *clipboardManager;
+    class ClipboardManager *clipboardManager;
+    class ProtocolHandler *protocolHandler;
 };
 #endif // MAINWINDOW_H
