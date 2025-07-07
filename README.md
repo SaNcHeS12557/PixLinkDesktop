@@ -38,17 +38,17 @@ PixLink is an advanced synchronization tool between **Windows** and **Android** 
 - [x] Established WebSocket connection between devices via QR
 - [x] Smartphone metrics monitoring (Bluetooth, network, Wi-Fi, etc.)
 - [x] Clipboard synchronization
+- [x] Smartphone as touchpad
       
 ### 🔧 In Progress
-- [ ] Control Bluetooth, Wi-Fi, hotspot toggles remotely  
-- [ ] Mouse and keyboard input from smartphone to PC (HID emulation)  
+- [ ] Control Bluetooth, Wi-Fi, hotspot toggles remotely   
 - [ ] File/link sharing between devices  
-
+- [ ] Remote screen mirroring from smartphone
+      
 ### 📅 Planned
 - [ ] Remote access to smartphone messages  
 - [ ] Remote access to smartphone media files  
 - [ ] Remote access to smartphone file system
-- [ ] Remote screen mirroring from smartphone
 
 ## 📜 License
 This project is licensed under the **GNU Public License**.
