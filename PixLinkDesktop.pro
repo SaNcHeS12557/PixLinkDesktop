@@ -1,7 +1,8 @@
 QT       += \
     core gui \
     network \
-    websockets
+    websockets \
+    testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

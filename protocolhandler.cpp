@@ -23,9 +23,9 @@ void ProtocolHandler::parseMessage(const QByteArray &message)
         stream >> dx >> dy;
         emit mouseMoved(dx, dy);
     } else if(command == Protocol::Command::Zoom) {
-        quint8 zoomType, zoomLevel;
-        stream >> zoomType >> zoomLevel;
-        emit zoomPerformed(zoomType, zoomLevel);
+        qint8 zoomLevel;
+        stream >> zoomLevel;
+        emit zoomPerformed(zoomLevel);
     } else if(command == Protocol::Command::MouseScroll) {
         qint16 dx, dy;
         stream >> dx >> dy;

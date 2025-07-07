@@ -19,7 +19,6 @@ public:
 
     void start();
     void stop();
-
     QClipboard *getClipboard();
     void setClipboard(QClipboard *newClipboard);
     bool getIsActive() const;

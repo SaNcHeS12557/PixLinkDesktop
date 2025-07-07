@@ -18,6 +18,7 @@
 #include <QJsonObject>
 #include "clipboardmanager.h"
 #include "protocolhandler.h"
+#include <QTest>
 
 #include <windows.h>
 #include "structs.h"
@@ -48,9 +49,10 @@ protected:
 
 public slots:
     void onNewConnection();
+    void onClientDisconnected();
     void onTextMessageReceived(const QString &message);
     void onMouseMove(qint16 dx, qint16 dy);
-    void onZoomOperation(quint8 zoomType, quint8 zoomLevel);
+    void onZoomOperation(qint8 zoomLevel);
     void onScrollOperation(qint16 dx, qint16 dy);
     void onClickOperation(quint8 buttonType);
 
@@ -58,5 +60,7 @@ private:
     Ui::MainWindow *ui;
     class ClipboardManager *clipboardManager;
     class ProtocolHandler *protocolHandler;
+    void performLeftClick();
+    void performRightClick();
 };
 #endif // MAINWINDOW_H

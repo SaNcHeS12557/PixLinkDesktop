@@ -23,7 +23,7 @@ signals:
     void mouseMoved(qint16 dx, qint16 dy);
     void mouseScrolled(qint16 dx, qint16 dy);
     void mouseClicked(quint8 buttonType);
-    void zoomPerformed(quint8 zoomType, quint8 zoomLevel);
+    void zoomPerformed(qint8 zoomLevel);
 
 };
 

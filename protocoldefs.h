@@ -16,11 +16,6 @@ enum class MouseButton : quint8 {
     Left = 0x01,
     Right = 0x02
 };
-
-enum class ZoomType : quint8 {
-    In = 0x01,
-    Out = 0x02
-};
 }
 
 #endif // PROTOCOLDEFS_H
