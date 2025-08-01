@@ -32,7 +32,7 @@ private:
     AVFrame *frame = nullptr;
     AVPacket *packet = nullptr;
     SwsContext *swsContext = nullptr; // YUV -> RGB
-
+    int prevWidth = 0, prevHeight = 0;
 };
 
 
