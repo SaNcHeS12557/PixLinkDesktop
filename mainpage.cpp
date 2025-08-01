@@ -11,3 +11,8 @@ mainpage::~mainpage()
 {
     delete ui;
 }
+
+QPushButton* mainpage::getWirelessConnectButton() const
+{
+    return ui->wirelessConnectButton;
+}

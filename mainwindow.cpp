@@ -6,17 +6,23 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , client(nullptr)
 {
     ui->setupUi(this);
 
-    // transparent background & blur effect
-    setAttribute(Qt::WA_TranslucentBackground);
+    // UI CUSTOMIZATION
+    setAttribute(Qt::WA_TranslucentBackground); // transparent & blur
 
-    // pages:
-    preparePage = new preparepage(this); // preparing connection between devices
-    mainPage = new mainpage(this); // main page with main functionality
+    // CORE
+    connectionManager = new ConnectionManager(this);
+    protocolHandler = new ProtocolHandler(this);
+    clipboardManager = new ClipboardManager(this);
+    screenMirrorManager = new ScreenMirrorManager(this);
+    screenMirrorView = new ScreenMirrorView();
+    inputController = new InputController(this);
 
+    // PAGES
+    preparePage = new preparepage(this);
+    mainPage = new mainpage(this);
     if (preparePage && mainPage) {
         ui->stackedWidget->addWidget(preparePage);
         ui->stackedWidget->addWidget(mainPage);
@@ -25,25 +31,72 @@ MainWindow::MainWindow(QWidget *parent)
         ui->stackedWidget->setCurrentWidget(preparePage);
     }
 
-    server = new QWebSocketServer(QStringLiteral("PixLink server"), QWebSocketServer::NonSecureMode, this);
-    if(server->listen(QHostAddress::Any, 8888)) {
-        qDebug() << "server started on port " << server->serverPort();
-    }
+    // CONNECTION -> PROTOCOL
+    connect(connectionManager, &ConnectionManager::textMessageReceived, protocolHandler, &ProtocolHandler::parseTextMessage);
+    connect(connectionManager, &ConnectionManager::binaryMessageReceived, protocolHandler, &ProtocolHandler::parseBinaryData);
 
+    // CONNECTION -> UI
+    connect(connectionManager, &ConnectionManager::clientConnected, this, &MainWindow::onClientConnected);
+    connect(connectionManager, &ConnectionManager::clientDisconnected, this, &MainWindow::onClientDisconnected);
+
+    // PROTOCOL -> SCREEN MIRRORING
+    connect(protocolHandler, &ProtocolHandler::mirroringStarted, this, &MainWindow::showMirroringUI);
+    connect(protocolHandler, &ProtocolHandler::mirroringStopped, this, &MainWindow::hideMirroringUI);
+    connect(protocolHandler, &ProtocolHandler::videoFrameReceived, screenMirrorManager, &ScreenMirrorManager::onVideoFrameReceived);
+
+    // SM MANAGER <-> VIEW
+    connect(screenMirrorManager, &ScreenMirrorManager::displayNewFrame, screenMirrorView, &ScreenMirrorView::updateFrame);
+    connect(screenMirrorView, &ScreenMirrorView::viewClosed, this, &MainWindow::hideMirroringUI);
+
+    // CLIPBOARD
+    connect(clipboardManager, &ClipboardManager::clipboardDataReady, this, &MainWindow::sendClipboardData);
+
+    // UI -> ACTIONS
     connect(preparePage->getQRButton(), &QPushButton::clicked, this, [=]() {
-        preparePage->showQR(server);
+        preparePage->showQR(connectionManager->getWebSocketServer());
     });
 
-    connect(server, &QWebSocketServer::newConnection,
-            this, &MainWindow::onNewConnection);
+    connect(mainPage->getWirelessConnectButton(), &QPushButton::clicked, this, [this](){
+        qDebug() << "Wireless Connect clicked -> sending request to phone...";
+        QJsonObject command;
+        command["command"] = "init_mirroring_request";
+        QJsonDocument doc(command);
+        connectionManager->sendTextMessage(doc.toJson(QJsonDocument::Compact));
+    });
 
-    clipboardManager = new ClipboardManager(this);
-    connect(clipboardManager, &ClipboardManager::clipboardDataReady, this, &MainWindow::sendData);
+    // INPUTS
+    connect(protocolHandler, &ProtocolHandler::mouseMoved, inputController, &InputController::onMouseMove);
+    connect(protocolHandler, &ProtocolHandler::mouseScrolled, inputController, &InputController::onMouseScroll);
+    connect(protocolHandler, &ProtocolHandler::mouseClicked, inputController, &InputController::onMouseClick);
 
-    protocolHandler = new ProtocolHandler(this);
-    connect(protocolHandler, &ProtocolHandler::mouseMoved, this, &MainWindow::onMouseMove);
-    connect(protocolHandler, &ProtocolHandler::mouseScrolled, this, &MainWindow::onScrollOperation);
-    connect(protocolHandler, &ProtocolHandler::mouseClicked, this, &MainWindow::onClickOperation);
+    connectionManager->startListening();
+
+    // screenMirrorManager = new ScreenMirrorManager(this);
+    // screenMirrorView = new ScreenMirrorView();
+    // connect(screenMirrorView, &ScreenMirrorView::viewClosed, this, [this](){
+    //     if(client && client->isValid()) {
+    //         QJsonObject command;
+    //         command["command"] = "mirroring_stopped";
+    //         sendData(command);
+    //     }
+
+    //     if(screenMirrorManager) screenMirrorManager->stop();
+
+    // });
+    // connect(protocolHandler, &ProtocolHandler::videoFrameReceived, screenMirrorManager, &ScreenMirrorManager::onVideoFrameReceived);
+    // connect(screenMirrorManager, &ScreenMirrorManager::displayNewFrame, screenMirrorView, &ScreenMirrorView::updateFrame);
+
+    // // BUTTONS:
+    // QPushButton* wirelessConnectButton = mainPage->getWirelessConnectButton();
+    // connect(wirelessConnectButton, &QPushButton::clicked, this, [this](){
+    //     qDebug() << "Wireless Connect Button clicked!";
+
+    //     if(!screenMirrorManager->getIsActive()) {
+    //         screenMirrorManager->start();
+    //     }
+    //     screenMirrorView->show();
+    // });
+
 }
 
 void MainWindow::showEvent(QShowEvent *event) {
@@ -87,161 +140,177 @@ void MainWindow::showEvent(QShowEvent *event) {
 
 }
 
-void MainWindow::onNewConnection()
+void MainWindow::onClientConnected()
 {
-    client = server->nextPendingConnection();
-    qDebug() << "mobile client new connection from" << client->peerAddress().toString();    
-
-    connect(client, &QWebSocket::textMessageReceived, this, &MainWindow::onTextMessageReceived);
-    connect(client, &QWebSocket::disconnected, this, &MainWindow::onClientDisconnected);
-    connect(client, &QWebSocket::binaryMessageReceived, protocolHandler, &ProtocolHandler::parseMessage);
-
-    if(mainPage) {
-        ui->stackedWidget->setCurrentWidget(mainPage);
-    }
-
+    ui->stackedWidget->setCurrentWidget(mainPage);
     clipboardManager->start();
 }
 
 void MainWindow::onClientDisconnected()
 {
-    qDebug() << "mobile client disconnected";
-
-    if(client) {
-        client->deleteLater();
-        client = nullptr;
-    }
-
+    ui->stackedWidget->setCurrentWidget(preparePage);
     clipboardManager->stop();
-
-    if(preparePage) {
-        ui->stackedWidget->setCurrentWidget(preparePage);
-    }
+    hideMirroringUI();
 }
 
-void MainWindow::onTextMessageReceived(const QString &message)
+void MainWindow::showMirroringUI()
 {
-    qDebug() << "[Received]" << message;
+    qDebug() << "showMirroringUI() called!";
+    if(!screenMirrorManager->getIsActive()) screenMirrorManager->start();
+    screenMirrorView->show();
+}
 
-    QJsonParseError parseError;
-    QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8(), &parseError);
+void MainWindow::hideMirroringUI()
+{
+    if(screenMirrorView->isVisible()) screenMirrorView->close();
 
-    if(parseError.error != QJsonParseError::NoError) {
-        qDebug() << "JSON parse error:" << parseError.errorString();
-        return;
-    }
-
-    if(!doc.isObject()) {
-        qDebug() << "Received message is not a JSON object";
-        return;
+    if(screenMirrorManager->getIsActive()) {
+        QJsonObject command;
+        command["command"] = "stop_mirroring";
+        QJsonDocument doc(command);
+        connectionManager->sendTextMessage(doc.toJson(QJsonDocument::Compact));
     }
 
-    const QJsonObject root = doc.object();
-    QString type = root[QStringLiteral("type")].toString();
+    if(screenMirrorView->isVisible()) screenMirrorView->close();
 
-    if(type == QStringLiteral("device_status")) {
-        QJsonObject data = root[QStringLiteral("data")].toObject();
-        // TODO: handle device status updates
-    }
-
+    if(screenMirrorManager->getIsActive()) screenMirrorManager->stop();
 }
 
-void MainWindow::onMouseMove(qint16 dx, qint16 dy)
+void MainWindow::sendClipboardData(const QJsonObject &data)
 {
-    qDebug() << "dx: " << dx << " dy: " << dy;
-
-    QPoint currentPos = QCursor::pos();
-    QCursor::setPos(currentPos.x() + dx, currentPos.y() + dy);
+    QJsonDocument doc(data);
+    connectionManager->sendTextMessage(doc.toJson(QJsonDocument::Compact));
 }
 
-void MainWindow::onZoomOperation(qint8 zoomLevel)
-{
-    if (zoomLevel > 0) {
-        qDebug() << "zoom in level: " << zoomLevel;
-    } else {
-        qDebug() << "zoom out level: " << zoomLevel;
-    }
-}
+// void MainWindow::onNewConnection()
+// {
+//     client = server->nextPendingConnection();
+//     qDebug() << "mobile client new connection from" << client->peerAddress().toString();
 
-void MainWindow::onScrollOperation(qint16 dx, qint16 dy)
-{
-    qDebug() << "scroll dx: " << dx << " scroll dy: " << dy;
+//     connect(client, &QWebSocket::textMessageReceived, this, &MainWindow::onTextMessageReceived);
+//     connect(client, &QWebSocket::disconnected, this, &MainWindow::onClientDisconnected);
+//     connect(client, &QWebSocket::errorOccurred, this, &MainWindow::onClientErrorOccured);
+//     connect(client, &QWebSocket::binaryMessageReceived, protocolHandler, &ProtocolHandler::parseMessage);
 
-    if (dy != 0) {
-        mouse_event(MOUSEEVENTF_WHEEL, 0, 0, dy, 0);
-    } else {
-        mouse_event(MOUSEEVENTF_HWHEEL, -dx, 0, 0, 0);
-    }
-}
+//     if(mainPage) {
+//         ui->stackedWidget->setCurrentWidget(mainPage);
+//     }
 
-void MainWindow::onClickOperation(quint8 buttonType)
-{
-    auto button = static_cast<Protocol::MouseButton>(buttonType);
-    switch (button) {
-    case Protocol::MouseButton::Left:
-        performLeftClick();
-        qDebug() << "Left mouse button clicked";
-        break;
-    case Protocol::MouseButton::Right:
-        performRightClick();
-        qDebug() << "Right mouse button clicked";
-        break;
-    default:
-        break;
-    }
-    qDebug() << "buttontype: " << buttonType;
-}
+//     clipboardManager->start();
+// }
 
-void MainWindow::performLeftClick()
-{
-    mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-    mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-}
+// void MainWindow::onClientDisconnected()
+// {
+//     qDebug() << "mobile client disconnected";
 
-void MainWindow::performRightClick()
-{
-    mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-    mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
-}
+//     if(client) {
+//         client->deleteLater();
+//         client = nullptr;
+//     }
 
-QString MainWindow::getLocalIP()
-{
-    const auto interfaces = QNetworkInterface::allInterfaces();
+//     clipboardManager->stop();
 
-    for(const auto &i : interfaces) {
-        auto flags = i.flags();
+//     if(screenMirrorView && screenMirrorView->isVisible()) {
+//         screenMirrorView->close();
+//     }
 
-        // loopback interfaces: 127.0.0.1 / ::1 - are not useful
-        if((flags & QNetworkInterface::IsUp) && !(flags & QNetworkInterface::IsLoopBack)) {
-            const auto addressEntries = i.addressEntries();
+//     if(preparePage) {
+//         ui->stackedWidget->setCurrentWidget(preparePage);
+//     }
+// }
 
-            for(const auto &ae : addressEntries) {
-                QHostAddress ip = ae.ip();
+// void MainWindow::onClientErrorOccured()
+// {
+//     qDebug() << "websocket error occured";
 
-                if(ip.protocol() == QHostAddress::IPv4Protocol && ip != QHostAddress::LocalHost) {
-                    return ip.toString();
-                }
+//     if(client) {
+//         qDebug() << "Error details:" << client->errorString();
+//         client->deleteLater();
+//         client = nullptr;
+//     }
 
-            }
-        }
-    }
+//     QMessageBox::critical(this, tr("Error"), tr("An error occurred with the WebSocket connection. Please try again."));
 
-    return "127.0.0.1"; // no valid ip :(
-}
+//     clipboardManager->stop();
 
-void MainWindow::sendData(const QJsonObject &data)
-{
-    if(client && client->isValid()) {
-        QString jsonString = QString::fromUtf8(
-            QJsonDocument(data)
-                .toJson(QJsonDocument::Compact));
+//     if(preparePage) {
+//         ui->stackedWidget->setCurrentWidget(preparePage);
+//     }
+// }
 
-        client->sendTextMessage(jsonString);
-        qDebug() << "Data sent to mobile client!";
-    }
-}
+// void MainWindow::onTextMessageReceived(const QString &message)
+// {
+//     qDebug() << "[Received]" << message;
+
+//     QJsonParseError parseError;
+//     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8(), &parseError);
+
+//     if(parseError.error != QJsonParseError::NoError) {
+//         qDebug() << "JSON parse error:" << parseError.errorString();
+//         return;
+//     }
+
+//     if(!doc.isObject()) {
+//         qDebug() << "Received message is not a JSON object";
+//         return;
+//     }
+
+//     const QJsonObject root = doc.object();
+//     QString type = root[QStringLiteral("type")].toString();
+
+//     if(type == QStringLiteral("device_status")) {
+//         QJsonObject data = root[QStringLiteral("data")].toObject();
+//         // TODO: handle device status updates
+//     }
+
+//      if(type == QStringLiteral("mirroring_stopped")) {
+//          qDebug() << "Stop mirroring command received";
+//          if(screenMirrorView && screenMirrorView->isVisible()) {
+//              screenMirrorView->close();
+//          }
+//      }
+
+// }
+
+// QString MainWindow::getLocalIP()
+// {
+//     const auto interfaces = QNetworkInterface::allInterfaces();
+
+//     for(const auto &i : interfaces) {
+//         auto flags = i.flags();
+
+//         // loopback interfaces: 127.0.0.1 / ::1 - are not useful
+//         if((flags & QNetworkInterface::IsUp) && !(flags & QNetworkInterface::IsLoopBack)) {
+//             const auto addressEntries = i.addressEntries();
+
+//             for(const auto &ae : addressEntries) {
+//                 QHostAddress ip = ae.ip();
+
+//                 if(ip.protocol() == QHostAddress::IPv4Protocol && ip != QHostAddress::LocalHost) {
+//                     return ip.toString();
+//                 }
+
+//             }
+//         }
+//     }
+
+//     return "127.0.0.1"; // no valid ip :(
+// }
+
+// void MainWindow::sendData(const QJsonObject &data)
+// {
+//     if(client && client->isValid()) {
+//         QString jsonString = QString::fromUtf8(
+//             QJsonDocument(data)
+//                 .toJson(QJsonDocument::Compact));
+
+//         client->sendTextMessage(jsonString);
+//         qDebug() << "Data sent to mobile client!";
+//     }
+// }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete screenMirrorView;
 }

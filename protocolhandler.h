@@ -2,6 +2,8 @@
 #define PROTOCOLHANDLER_H
 
 #include <QObject>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include "protocoldefs.h"
 
 // protocol (big endian notation):
@@ -17,13 +19,22 @@ public:
     explicit ProtocolHandler(QObject *parent = nullptr);
 
 public slots:
-    void parseMessage(const QByteArray &message);
+    void parseTextMessage(const QString &message);
+    void parseBinaryData(const QByteArray &message);
 
 signals:
+    // APP EVENTS
+    void mirroringStarted();
+    void mirroringStopped();
+    void clipboardDataReceived(const QJsonObject &data);
+
+    // INPUTS
     void mouseMoved(qint16 dx, qint16 dy);
     void mouseScrolled(qint16 dx, qint16 dy);
     void mouseClicked(quint8 buttonType);
-    void zoomPerformed(qint8 zoomLevel);
+
+    // VIDEO
+    void videoFrameReceived(const QByteArray &frameData);
 
 };
 

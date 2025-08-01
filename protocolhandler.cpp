@@ -8,8 +8,28 @@
 
 ProtocolHandler::ProtocolHandler(QObject *parent) {}
 
-void ProtocolHandler::parseMessage(const QByteArray &message)
+void ProtocolHandler::parseTextMessage(const QString &message)
 {
+    QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
+    if (!doc.isObject()) return;
+
+    QJsonObject root = doc.object();
+    if (root.contains("event")) {
+        QString event = root["event"].toString();
+        if (event == "mirroring_started") {
+            emit mirroringStarted();
+        } else if (event == "mirroring_stopped") {
+            emit mirroringStopped();
+        }
+    } else if (root.contains("type") && root["type"] == "clipboard") {
+        emit clipboardDataReceived(root);
+    }
+}
+
+void ProtocolHandler::parseBinaryData(const QByteArray &message)
+{
+    if(message.isEmpty()) return;
+
     QDataStream stream(message);
     stream.setByteOrder(QDataStream::BigEndian);
 
@@ -22,10 +42,6 @@ void ProtocolHandler::parseMessage(const QByteArray &message)
         qint16 dx, dy;
         stream >> dx >> dy;
         emit mouseMoved(dx, dy);
-    } else if(command == Protocol::Command::Zoom) {
-        qint8 zoomLevel;
-        stream >> zoomLevel;
-        emit zoomPerformed(zoomLevel);
     } else if(command == Protocol::Command::MouseScroll) {
         qint16 dx, dy;
         stream >> dx >> dy;
@@ -34,5 +50,7 @@ void ProtocolHandler::parseMessage(const QByteArray &message)
         quint8 buttonType;
         stream >> buttonType;
         emit mouseClicked(buttonType);
+    } else if(command == Protocol::Command::VideoFrame) {
+        emit videoFrameReceived(message.mid(1));
     }
 }

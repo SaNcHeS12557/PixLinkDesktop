@@ -18,15 +18,18 @@
 #include <QJsonObject>
 #include "clipboardmanager.h"
 #include "protocolhandler.h"
+#include "screenmirrormanager.h"
+#include "screenmirrorview.h"
+#include "connectionmanager.h"
+#include "inputcontroller.h"
 #include <QTest>
+#include <QMessageBox>
 
 #include <windows.h>
 #include "structs.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-    class MainWindow;
-}
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -38,28 +41,39 @@ public:
     ~MainWindow();
 
 protected:
-    QWebSocketServer *server;
-    QWebSocket *client;
+//     QWebSocketServer *server;
+//     QWebSocket *client;
     preparepage *preparePage;
     mainpage *mainPage;
     void showEvent(QShowEvent *event) override;
-    QString getLocalIP();
-    QString createConnectionURL();
-    void sendData(const QJsonObject &data);
+//     QString getLocalIP();
+//     QString createConnectionURL();
+//     void sendData(const QJsonObject &data);
 
 public slots:
-    void onNewConnection();
+    // void onNewConnection();
+    void onClientConnected();
     void onClientDisconnected();
-    void onTextMessageReceived(const QString &message);
-    void onMouseMove(qint16 dx, qint16 dy);
-    void onZoomOperation(qint8 zoomLevel);
-    void onScrollOperation(qint16 dx, qint16 dy);
-    void onClickOperation(quint8 buttonType);
+    void showMirroringUI();
+    void hideMirroringUI();
+    void sendClipboardData(const QJsonObject &data);
+
+    // void onClientErrorOccured();
+    // void onTextMessageReceived(const QString &message);
 
 private:
     Ui::MainWindow *ui;
-    class ClipboardManager *clipboardManager;
-    class ProtocolHandler *protocolHandler;
+
+    // preparepage *preparePage;
+    // mainpage *mainPage;
+
+    class ConnectionManager* connectionManager;
+    class ClipboardManager* clipboardManager;
+    class ProtocolHandler* protocolHandler;
+    class ScreenMirrorManager* screenMirrorManager;
+    class ScreenMirrorView* screenMirrorView;
+    class InputController* inputController;
+
     void performLeftClick();
     void performRightClick();
 };

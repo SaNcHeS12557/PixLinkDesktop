@@ -20,7 +20,7 @@ void ClipboardManager::stop() {
     if(!isActive) return;
     disconnect(getClipboard(), &QClipboard::changed, this, &ClipboardManager::onClipboardChanged);
     setIsActive(false);
-        qDebug() << "Clipboard manager stopped!";
+    qDebug() << "Clipboard manager stopped!";
 }
 
 QClipboard* ClipboardManager::getClipboard()

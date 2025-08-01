@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QMainWindow>
+#include <QPushButton>
 
 // PAGE THAT IS DISPLAYED IN THE MAIN WINDOW
 // PAGE WITH THE MAIN FUNCTIONALITY
@@ -20,6 +21,8 @@ class mainpage : public QWidget
 public:
     explicit mainpage(QWidget *parent = nullptr);
     ~mainpage();
+
+    QPushButton* getWirelessConnectButton() const;
 
 private:
     Ui::MainPage *ui;
