@@ -39,11 +39,11 @@ PixLink is an advanced synchronization tool between **Windows** and **Android** 
 - [x] Smartphone metrics monitoring (Bluetooth, network, Wi-Fi, etc.)
 - [x] Clipboard synchronization
 - [x] Smartphone as touchpad
+- [x] Remote smartphone screen mirroring
       
 ### 🔧 In Progress
-- [ ] Control Bluetooth, Wi-Fi, hotspot toggles remotely   
 - [ ] File/link sharing between devices  
-- [ ] Remote screen mirroring from smartphone
+- [ ] Control Bluetooth, Wi-Fi, hotspot toggles remotely
       
 ### 📅 Planned
 - [ ] Remote access to smartphone messages  
