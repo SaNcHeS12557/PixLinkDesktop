@@ -17,13 +17,6 @@ enum class MouseButton : quint8 {
     Left = 0x01,
     Right = 0x02,
 };
-
-// TODO - FFMPEG
-enum class FrameFlags : quint8 {
-    None = 0x00,
-    Config = 0x01,
-    Frame = 0x02,
-};
 }
 
 #endif // PROTOCOLDEFS_H
