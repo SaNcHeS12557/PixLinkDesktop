@@ -5,7 +5,6 @@ PixLink is an advanced synchronization tool between **Windows** and **Android** 
 
 ## ✨ Features
 - 🔋 **Phone Battery Monitoring** – Keep track of your phone’s battery status directly from your PC
-- 🔵 **Bluetooth & Hotspot Control** – Remotely enable or disable Bluetooth and Wi-Fi hotspot
 - 📩 **Read Incoming Messages** – Receive and display SMS messages on your computer
 - 📤 **File Transfer** – Send and receive files effortlessly between Windows and Android
 - 🌐 **Screen Mirroring via URL** – Open a webpage on your PC and instantly display it on your phone’s screen
@@ -43,7 +42,7 @@ PixLink is an advanced synchronization tool between **Windows** and **Android** 
       
 ### 🔧 In Progress
 - [ ] File/link sharing between devices  
-- [ ] Control Bluetooth, Wi-Fi, hotspot toggles remotely
+- [ ] Control sound mode remotely
       
 ### 📅 Planned
 - [ ] Remote access to smartphone messages  
