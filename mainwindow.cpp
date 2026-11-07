@@ -148,6 +148,7 @@ void MainWindow::onClientConnected()
 
 void MainWindow::onClientDisconnected()
 {
+    preparePage->showChoiceView(false); // don't come back to a stale QR code
     ui->stackedWidget->setCurrentWidget(preparePage);
     clipboardManager->stop();
     hideMirroringUI();

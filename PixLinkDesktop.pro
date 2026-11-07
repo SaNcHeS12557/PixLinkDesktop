@@ -47,7 +47,6 @@ SOURCES += \
     mainwindow.cpp \
     preparepage.cpp \
     protocolhandler.cpp \
-    qrdialog.cpp \
     screenmirrormanager.cpp \
     screenmirrorview.cpp \
     videodecoder.cpp
@@ -61,7 +60,6 @@ HEADERS += \
     preparepage.h \
     protocoldefs.h \
     protocolhandler.h \
-    qrdialog.h \
     screenmirrormanager.h \
     screenmirrorview.h \
     structs.h \

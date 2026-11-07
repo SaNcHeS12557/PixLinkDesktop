@@ -19,32 +19,50 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="greetingLabel">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>50</y>
-     <width>401</width>
-     <height>121</height>
+     <x>0</x>
+     <y>40</y>
+     <width>675</width>
+     <height>95</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>32</pointsize>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="autoFillBackground">
-    <bool>false</bool>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+    color: #F2F2F2;
+    background: transparent;
+}</string>
    </property>
    <property name="text">
-    <string>Hej! Let's connect your phone</string>
+    <string>Hej!</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
-   <property name="wordWrap">
-    <bool>true</bool>
+  </widget>
+  <widget class="QLabel" name="subtitleLabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>135</y>
+     <width>675</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+    color: #BEBEBE;
+    font-family: &quot;Segoe UI Semilight&quot;, &quot;Segoe UI&quot;;
+    font-size: 20pt;
+    background: transparent;
+}</string>
+   </property>
+   <property name="text">
+    <string>Let's connect your devices!</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QPushButton" name="manualButton">
@@ -137,6 +155,91 @@ via QR</string>
      <width>45</width>
      <height>45</height>
     </size>
+   </property>
+  </widget>
+  <widget class="QWidget" name="qrPanel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>190</y>
+     <width>675</width>
+     <height>265</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent;</string>
+   </property>
+   <widget class="QLabel" name="qrImageLabel">
+    <property name="geometry">
+     <rect>
+      <x>227</x>
+      <y>0</y>
+      <width>220</width>
+      <height>220</height>
+     </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="urlLabel">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>230</y>
+      <width>675</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    color: #8E8E93;
+    font-family: &quot;Segoe UI&quot;;
+    font-size: 10pt;
+    background: transparent;
+}</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::TextInteractionFlag::TextSelectableByMouse</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="backButton">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>16</y>
+     <width>96</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: rgba(50, 50, 50, 150);
+    color: #BEBEBE;
+    border-radius: 18px;
+    font-family: &quot;Segoe UI&quot;;
+    font-size: 11pt;
+    padding: 4px 14px;
+}
+
+QPushButton:hover {
+    background-color: #3A3A3C;
+}
+
+QPushButton:pressed {
+    background-color: #48484A;
+}
+</string>
+   </property>
+   <property name="text">
+    <string>←  Back</string>
    </property>
   </widget>
  </widget>
