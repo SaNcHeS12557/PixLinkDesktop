@@ -31,8 +31,12 @@ CONFIG(debug, debug|release) {
     DEST_DIR = $$OUT_PWD/release
 }
 
-COPY_COMMAND = copy /y $$shell_path($$FFMPEG_BIN_PATH/*.dll) $$shell_path($$DEST_DIR)
-QMAKE_POST_LINK += $$COPY_COMMAND
+# FFmpeg runtime DLLs are not tracked in git (*.dll is ignored), so only copy them when present.
+exists($$FFMPEG_BIN_PATH/*.dll) {
+    QMAKE_POST_LINK += copy /y $$shell_quote($$shell_path($$FFMPEG_BIN_PATH/*.dll)) $$shell_quote($$shell_path($$DEST_DIR))
+} else {
+    warning("FFmpeg DLLs not found in $$FFMPEG_BIN_PATH - the app will build but not start. Put the matching FFmpeg shared build's bin/*.dll there.")
+}
 
 SOURCES += \
     clipboardmanager.cpp \

@@ -8,6 +8,10 @@
 #include <QString>
 #include <QDebug>
 #include <QSettings>
+#include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QNetworkInterface>
 
 #include "qrdialog.h"
 
@@ -38,6 +42,9 @@ signals:
 
 private:
     Ui::PreparePage *ui;
+
+    QString configuredUrl();
+    QString getLocalIP();
 
 };
 
