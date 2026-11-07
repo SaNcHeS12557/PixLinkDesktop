@@ -101,7 +101,7 @@ QPushButton:pressed {
 manually</string>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../../resources.qrc">
      <normaloff>:/imgs/resources/manualIcon.png</normaloff>:/imgs/resources/manualIcon.png</iconset>
    </property>
    <property name="iconSize">
@@ -147,7 +147,7 @@ QPushButton:pressed {
 via QR</string>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../../resources.qrc">
      <normaloff>:/imgs/resources/qrIcon.png</normaloff>:/imgs/resources/qrIcon.png</iconset>
    </property>
    <property name="iconSize">
@@ -244,7 +244,7 @@ QPushButton:pressed {
   </widget>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

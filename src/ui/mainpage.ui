@@ -73,7 +73,7 @@ QLabel {
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="resources.qrc">:/imgs/resources/wifiStatus.png</pixmap>
+        <pixmap resource="../../resources.qrc">:/imgs/resources/wifiStatus.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -92,7 +92,7 @@ QLabel {
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="resources.qrc">:/imgs/resources/networkStatus.png</pixmap>
+        <pixmap resource="../../resources.qrc">:/imgs/resources/networkStatus.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -111,7 +111,7 @@ QLabel {
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="resources.qrc">:/imgs/resources/networkStatus.png</pixmap>
+        <pixmap resource="../../resources.qrc">:/imgs/resources/networkStatus.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -142,7 +142,7 @@ QLabel {
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="resources.qrc">:/imgs/resources/batteryStatus.png</pixmap>
+        <pixmap resource="../../resources.qrc">:/imgs/resources/batteryStatus.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -210,7 +210,7 @@ QLabel {
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="resources.qrc">:/imgs/resources/pixelFrame.png</pixmap>
+    <pixmap resource="../../resources.qrc">:/imgs/resources/pixelFrame.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -241,7 +241,7 @@ QLabel {
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="resources.qrc">:/imgs/resources/wallpaper.png</pixmap>
+    <pixmap resource="../../resources.qrc">:/imgs/resources/wallpaper.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -292,7 +292,7 @@ QPushButton:pressed {
      Connect</string>
       </property>
       <property name="icon">
-       <iconset resource="resources.qrc">
+       <iconset resource="../../resources.qrc">
         <normaloff>:/imgs/resources/remoteConnectIcon.png</normaloff>:/imgs/resources/remoteConnectIcon.png</iconset>
       </property>
      </widget>
@@ -332,7 +332,7 @@ QPushButton:pressed {
      Files</string>
       </property>
       <property name="icon">
-       <iconset resource="resources.qrc">
+       <iconset resource="../../resources.qrc">
         <normaloff>:/imgs/resources/filesIcon.png</normaloff>:/imgs/resources/filesIcon.png</iconset>
       </property>
      </widget>
@@ -372,7 +372,7 @@ QPushButton:pressed {
      Media</string>
       </property>
       <property name="icon">
-       <iconset resource="resources.qrc">
+       <iconset resource="../../resources.qrc">
         <normaloff>:/imgs/resources/mediaIcon.png</normaloff>:/imgs/resources/mediaIcon.png</iconset>
       </property>
      </widget>
@@ -412,7 +412,7 @@ QPushButton:pressed {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../../resources.qrc">
           <normaloff>:/imgs/resources/hotspotIcon.png</normaloff>:/imgs/resources/hotspotIcon.png</iconset>
         </property>
         <property name="iconSize">
@@ -472,7 +472,7 @@ QPushButton:pressed {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../../resources.qrc">
           <normaloff>:/imgs/resources/bluetoothIcon.png</normaloff>:/imgs/resources/bluetoothIcon.png</iconset>
         </property>
         <property name="iconSize">
@@ -516,7 +516,7 @@ QPushButton:pressed {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../../resources.qrc">
           <normaloff>:/imgs/resources/wifiIcon.png</normaloff>:/imgs/resources/wifiIcon.png</iconset>
         </property>
         <property name="iconSize">
@@ -562,7 +562,7 @@ QPushButton:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="resources.qrc">
+           <iconset resource="../../resources.qrc">
             <normaloff>:/imgs/resources/notificationIcon.png</normaloff>:/imgs/resources/notificationIcon.png</iconset>
           </property>
           <property name="iconSize">
@@ -628,7 +628,7 @@ QPushButton:pressed {
            <string> Upload</string>
           </property>
           <property name="icon">
-           <iconset resource="resources.qrc">
+           <iconset resource="../../resources.qrc">
             <normaloff>:/imgs/resources/uploadIcon.png</normaloff>:/imgs/resources/uploadIcon.png</iconset>
           </property>
           <property name="iconSize">
@@ -690,7 +690,7 @@ QPushButton:pressed {
      All</string>
       </property>
       <property name="icon">
-       <iconset resource="resources.qrc">
+       <iconset resource="../../resources.qrc">
         <normaloff>:/imgs/resources/readAllIcon.png</normaloff>:/imgs/resources/readAllIcon.png</iconset>
       </property>
       <property name="iconSize">
@@ -710,7 +710,7 @@ QPushButton:pressed {
   <zorder>verticalLayoutWidget</zorder>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

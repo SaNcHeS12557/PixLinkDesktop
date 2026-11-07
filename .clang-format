@@ -1,0 +1,59 @@
+# PixLink code style: LLVM base, adjusted to Qt conventions (4 spaces, braces on own line for
+# classes and functions). Run from the repo root:
+#   clang-format -i src/**/*.h src/**/*.cpp
+# thirdparty/ has its own style and is not formatted.
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++17
+
+IndentWidth: 4
+ColumnLimit: 120
+AccessModifierOffset: -4
+IndentCaseLabels: false
+NamespaceIndentation: None
+FixNamespaceComments: true
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterFunction: true
+  AfterStruct: true
+  AfterEnum: true
+  AfterUnion: true
+  AfterNamespace: false
+  AfterControlStatement: Never
+  BeforeElse: false
+  BeforeLambdaBody: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+InsertBraces: true
+
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: Never
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortLambdasOnASingleLine: All
+AllowShortEnumsOnASingleLine: false
+
+PointerAlignment: Right
+SpaceBeforeParens: ControlStatements
+MaxEmptyLinesToKeep: 1
+KeepEmptyLines:
+  AtStartOfBlock: false
+  AtStartOfFile: false
+
+# Includes: own header first, then generated ui_*.h, project headers, Qt, FFmpeg, system.
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"ui_'
+    Priority: 2
+  - Regex: '^"'
+    Priority: 3
+  - Regex: '^<Q'
+    Priority: 4
+  - Regex: '^<lib(av|sw)'
+    Priority: 5
+  - Regex: '^<'
+    Priority: 6

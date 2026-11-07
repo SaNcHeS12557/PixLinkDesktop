@@ -1,22 +1,22 @@
 #ifndef VIDEODECODER_H
 #define VIDEODECODER_H
 
-#include <QObject>
 #include <QImage>
-#include <QDebug>
+#include <QObject>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
-#include <libavutil/imgutils.h>
 #include <libswscale/swscale.h>
 }
 
+// Decodes the phone's H.264 screen stream into QImages. Runs on its own thread (see ScreenMirrorManager).
 class VideoDecoder : public QObject
 {
     Q_OBJECT
+
 public:
     explicit VideoDecoder(QObject *parent = nullptr);
-    ~VideoDecoder();
+    ~VideoDecoder() override;
 
     bool init();
 
@@ -24,16 +24,15 @@ signals:
     void frameReady(const QImage &image);
 
 public slots:
-    void processFrame(const QByteArray &frameData); // >> H.264 packets
+    // One H.264 packet. It may produce zero, one or several frames.
+    void processFrame(const QByteArray &frameData);
 
 private:
     const AVCodec *codec = nullptr;
     AVCodecContext *codecContext = nullptr;
     AVFrame *frame = nullptr;
     AVPacket *packet = nullptr;
-    SwsContext *swsContext = nullptr; // YUV -> RGB
-    int prevWidth = 0, prevHeight = 0;
+    SwsContext *swsContext = nullptr; // converts decoded YUV frames to RGB for QImage
 };
-
 
 #endif // VIDEODECODER_H

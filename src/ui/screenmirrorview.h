@@ -2,19 +2,19 @@
 #define SCREENMIRRORVIEW_H
 
 #include <QWidget>
-#include <QCloseEvent>
 
 namespace Ui {
 class ScreenMirrorView;
 }
 
+// Separate window that shows the phone's mirrored screen.
 class ScreenMirrorView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ScreenMirrorView();
-    ~ScreenMirrorView();
+    ScreenMirrorView();
+    ~ScreenMirrorView() override;
 
 public slots:
     void updateFrame(const QImage &image);
@@ -23,7 +23,7 @@ signals:
     void viewClosed();
 
 protected:
-    void closeEvent(QCloseEvent* event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::ScreenMirrorView *ui;

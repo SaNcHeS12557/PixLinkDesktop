@@ -1,30 +1,22 @@
-QT       += \
-    core gui \
-    network \
-    websockets \
-    testlib
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets network websockets
 
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+# Headers are included by their path inside src/, e.g. "network/connectionmanager.h".
+INCLUDEPATH += $$PWD/src
 
-# QR CODE GENERATOR
+# Windows-only: input injection (mouse_event) and window blur (user32).
+win32: LIBS += -luser32
+
+# QR code generator
 include(thirdparty/qtqrcodegenerator/Qt-QrCodeGenerator.pri)
 
-# FFMPEG
+# FFmpeg (H.264 decoding for screen mirroring)
 FFMPEG_PATH = $$PWD/thirdparty/ffmpeg-master-latest-win64-gpl-shared
+FFMPEG_BIN_PATH = $$FFMPEG_PATH/bin
 INCLUDEPATH += $$FFMPEG_PATH/include
-LIBS += -L$$FFMPEG_PATH/lib \
-    -lavformat \
-    -lavcodec \
-    -lavutil \
-    -lswscale
+LIBS += -L$$FFMPEG_PATH/lib -lavcodec -lavutil -lswscale
 
-FFMPEG_BIN_PATH = $$PWD/thirdparty/ffmpeg-master-latest-win64-gpl-shared/bin
 CONFIG(debug, debug|release) {
     DEST_DIR = $$OUT_PWD/debug
 } else {
@@ -39,42 +31,37 @@ exists($$FFMPEG_BIN_PATH/*.dll) {
 }
 
 SOURCES += \
-    clipboardmanager.cpp \
-    connectionmanager.cpp \
-    inputcontroller.cpp \
-    main.cpp \
-    mainpage.cpp \
-    mainwindow.cpp \
-    preparepage.cpp \
-    protocolhandler.cpp \
-    screenmirrormanager.cpp \
-    screenmirrorview.cpp \
-    videodecoder.cpp
+    src/main.cpp \
+    src/core/clipboardmanager.cpp \
+    src/core/inputcontroller.cpp \
+    src/mirroring/screenmirrormanager.cpp \
+    src/mirroring/videodecoder.cpp \
+    src/network/connectionmanager.cpp \
+    src/network/protocolhandler.cpp \
+    src/ui/mainpage.cpp \
+    src/ui/mainwindow.cpp \
+    src/ui/preparepage.cpp \
+    src/ui/screenmirrorview.cpp
 
 HEADERS += \
-    clipboardmanager.h \
-    connectionmanager.h \
-    inputcontroller.h \
-    mainpage.h \
-    mainwindow.h \
-    preparepage.h \
-    protocoldefs.h \
-    protocolhandler.h \
-    screenmirrormanager.h \
-    screenmirrorview.h \
-    structs.h \
-    videodecoder.h
+    src/core/clipboardmanager.h \
+    src/core/inputcontroller.h \
+    src/mirroring/screenmirrormanager.h \
+    src/mirroring/videodecoder.h \
+    src/network/connectionmanager.h \
+    src/network/protocoldefs.h \
+    src/network/protocolhandler.h \
+    src/ui/mainpage.h \
+    src/ui/mainwindow.h \
+    src/ui/preparepage.h \
+    src/ui/screenmirrorview.h \
+    src/ui/windowcomposition.h
 
 FORMS += \
-    mainpage.ui \
-    mainwindow.ui \
-    preparepage.ui \
-    screenmirrorview.ui
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+    src/ui/mainpage.ui \
+    src/ui/mainwindow.ui \
+    src/ui/preparepage.ui \
+    src/ui/screenmirrorview.ui
 
 RESOURCES += \
     resources.qrc

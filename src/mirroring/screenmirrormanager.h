@@ -1,36 +1,39 @@
 #ifndef SCREENMIRRORMANAGER_H
 #define SCREENMIRRORMANAGER_H
 
-#include "videodecoder.h"
-
+#include <QImage>
 #include <QObject>
-#include <QThread>
 
+class QThread;
+class VideoDecoder;
+
+// Runs the VideoDecoder on a background thread so decoding never blocks the UI.
+// Frames go in through onVideoFrameReceived() and come out as displayNewFrame().
 class ScreenMirrorManager : public QObject
 {
     Q_OBJECT
+
 public:
     explicit ScreenMirrorManager(QObject *parent = nullptr);
-    ~ScreenMirrorManager();
+    ~ScreenMirrorManager() override;
 
     void start();
     void stop();
     bool getIsActive() const;
-    void setIsActive(bool newIsActive);
 
 public slots:
     void onVideoFrameReceived(const QByteArray &frameData);
     void onFrameReady(const QImage &image);
 
 signals:
+    // Internal: hands a packet over to the decoder thread (queued connection).
     void decodeFrame(const QByteArray &frameData);
     void displayNewFrame(const QImage &image);
 
 private:
-    bool isActive;
-    QThread* decoderThread;
-    VideoDecoder* decoder;
-
+    bool isActive = false;
+    QThread *decoderThread = nullptr;
+    VideoDecoder *decoder = nullptr;
 };
 
 #endif // SCREENMIRRORMANAGER_H
