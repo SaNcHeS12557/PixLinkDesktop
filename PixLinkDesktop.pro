@@ -34,6 +34,7 @@ SOURCES += \
     src/main.cpp \
     src/core/clipboardmanager.cpp \
     src/core/inputcontroller.cpp \
+    src/mirroring/mirroringqualitycontroller.cpp \
     src/mirroring/screenmirrormanager.cpp \
     src/mirroring/videodecoder.cpp \
     src/network/connectionmanager.cpp \
@@ -46,6 +47,9 @@ SOURCES += \
 HEADERS += \
     src/core/clipboardmanager.h \
     src/core/inputcontroller.h \
+    src/mirroring/decodershared.h \
+    src/mirroring/mirroringqualitycontroller.h \
+    src/mirroring/mirroringstats.h \
     src/mirroring/screenmirrormanager.h \
     src/mirroring/videodecoder.h \
     src/network/connectionmanager.h \
@@ -60,8 +64,7 @@ HEADERS += \
 FORMS += \
     src/ui/mainpage.ui \
     src/ui/mainwindow.ui \
-    src/ui/preparepage.ui \
-    src/ui/screenmirrorview.ui
+    src/ui/preparepage.ui
 
 RESOURCES += \
     resources.qrc

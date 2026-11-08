@@ -1,7 +1,5 @@
 #include "network/protocolhandler.h"
 
-#include "network/protocoldefs.h"
-
 #include <QDataStream>
 #include <QJsonDocument>
 
@@ -20,9 +18,11 @@ void ProtocolHandler::parseTextMessage(const QString &message)
     if (root.contains("event")) {
         const QString event = root["event"].toString();
         if (event == "mirroring_started") {
-            emit mirroringStarted();
+            emit mirroringStarted(root);
         } else if (event == "mirroring_stopped") {
             emit mirroringStopped();
+        } else if (event == "mirroring_config_applied") {
+            emit mirroringConfigApplied(root);
         }
     } else if (root["type"].toString() == "clipboard") {
         emit clipboardDataReceived(root);
@@ -60,9 +60,23 @@ void ProtocolHandler::parseBinaryData(const QByteArray &message)
         emit mouseClicked(buttonType);
         break;
     }
-    case Protocol::Command::VideoFrame:
-        emit videoFrameReceived(message.mid(1));
+    case Protocol::Command::VideoFrame: {
+        Protocol::VideoPacket packet;
+        packet.data = message.mid(1);
+        emit videoPacketReceived(packet);
         break;
+    }
+    case Protocol::Command::VideoFrameV2: {
+        if (message.size() <= Protocol::kVideoFrameV2HeaderSize) {
+            break;
+        }
+        Protocol::VideoPacket packet;
+        packet.hasMetadata = true;
+        stream >> packet.flags >> packet.sequence >> packet.ptsUs;
+        packet.data = message.mid(Protocol::kVideoFrameV2HeaderSize);
+        emit videoPacketReceived(packet);
+        break;
+    }
     default:
         break;
     }

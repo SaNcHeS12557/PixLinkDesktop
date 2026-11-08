@@ -8,6 +8,7 @@ class ClipboardManager;
 class ConnectionManager;
 class InputController;
 class MainPage;
+class MirroringQualityController;
 class PreparePage;
 class ProtocolHandler;
 class ScreenMirrorManager;
@@ -31,11 +32,12 @@ public:
 
 protected:
     void showEvent(QShowEvent *event) override;
+    bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
 
 private slots:
     void onClientConnected();
     void onClientDisconnected();
-    void showMirroringUI();
+    void showMirroringUI(const QJsonObject &info);
     void hideMirroringUI();
     void sendJson(const QJsonObject &data);
 
@@ -49,10 +51,17 @@ private:
     ClipboardManager *clipboardManager;
     ProtocolHandler *protocolHandler;
     ScreenMirrorManager *screenMirrorManager;
+    MirroringQualityController *qualityController;
     ScreenMirrorView *screenMirrorView;
     InputController *inputController;
 
+    QSize setupSize; // window size the setup page is designed for
+    bool resizable = true;
+
     void applyAcrylicBlur();
+    void updateResizability();
+    void setResizable(bool resizable);
+    void setNativeResizeFrame(bool enabled);
 };
 
 #endif // MAINWINDOW_H

@@ -4,8 +4,10 @@
 
 #include "core/clipboardmanager.h"
 #include "core/inputcontroller.h"
+#include "mirroring/mirroringqualitycontroller.h"
 #include "mirroring/screenmirrormanager.h"
 #include "network/connectionmanager.h"
+#include "network/protocoldefs.h"
 #include "network/protocolhandler.h"
 #include "ui/mainpage.h"
 #include "ui/preparepage.h"
@@ -28,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     protocolHandler = new ProtocolHandler(this);
     clipboardManager = new ClipboardManager(this);
     screenMirrorManager = new ScreenMirrorManager(this);
+    qualityController = new MirroringQualityController(this);
     screenMirrorView = new ScreenMirrorView(); // separate top-level window, deleted in the destructor
     inputController = new InputController(this);
 
@@ -36,6 +39,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stackedWidget->addWidget(preparePage);
     ui->stackedWidget->addWidget(mainPage);
     ui->stackedWidget->setCurrentWidget(preparePage);
+
+    setupSize = size();
+    connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &MainWindow::updateResizability);
 
     // Phone -> decoded messages
     connect(connectionManager, &ConnectionManager::textMessageReceived, protocolHandler,
@@ -47,14 +53,40 @@ MainWindow::MainWindow(QWidget *parent)
     connect(connectionManager, &ConnectionManager::clientConnected, this, &MainWindow::onClientConnected);
     connect(connectionManager, &ConnectionManager::clientDisconnected, this, &MainWindow::onClientDisconnected);
 
-    // Screen mirroring: phone events, video frames, mirror window
+    // Screen mirroring: phone events and video packets -> decoder -> mirror window
     connect(protocolHandler, &ProtocolHandler::mirroringStarted, this, &MainWindow::showMirroringUI);
     connect(protocolHandler, &ProtocolHandler::mirroringStopped, this, &MainWindow::hideMirroringUI);
-    connect(protocolHandler, &ProtocolHandler::videoFrameReceived, screenMirrorManager,
-            &ScreenMirrorManager::onVideoFrameReceived);
+    connect(protocolHandler, &ProtocolHandler::mirroringConfigApplied, this,
+            [](const QJsonObject &info) { qDebug() << "MainWindow: phone applied mirroring config" << info; });
+    connect(protocolHandler, &ProtocolHandler::videoPacketReceived, screenMirrorManager,
+            &ScreenMirrorManager::onVideoPacket);
     connect(screenMirrorManager, &ScreenMirrorManager::displayNewFrame, screenMirrorView,
             &ScreenMirrorView::updateFrame);
+    connect(screenMirrorManager, &ScreenMirrorManager::videoSizeChanged, screenMirrorView,
+            &ScreenMirrorView::setVideoSize);
+    connect(screenMirrorView, &ScreenMirrorView::targetSizeChanged, screenMirrorManager,
+            &ScreenMirrorManager::setTargetSize);
     connect(screenMirrorView, &ScreenMirrorView::viewClosed, this, &MainWindow::hideMirroringUI);
+    connect(screenMirrorManager, &ScreenMirrorManager::keyframeNeeded, this,
+            [this]() { sendJson({{"command", "request_keyframe"}}); });
+
+    // Mirroring quality: network measurements -> quality controller -> phone
+    connect(connectionManager, &ConnectionManager::rttMeasured, this,
+            [this]() { screenMirrorManager->setRtt(connectionManager->smoothedRttMs()); });
+    connect(screenMirrorManager, &ScreenMirrorManager::statsUpdated, qualityController,
+            &MirroringQualityController::onStats);
+    connect(screenMirrorManager, &ScreenMirrorManager::statsUpdated, screenMirrorView, &ScreenMirrorView::setStats);
+    connect(qualityController, &MirroringQualityController::configChanged, this, [this](const QJsonObject &config) {
+        QJsonObject command = config;
+        command["command"] = "mirroring_config";
+        sendJson(command);
+    });
+    connect(qualityController, &MirroringQualityController::levelChanged, this, [this]() {
+        screenMirrorView->setQualityInfo(qualityController->describe(), qualityController->currentLevel(),
+                                         qualityController->isAutomatic());
+    });
+    connect(screenMirrorView, &ScreenMirrorView::qualityLevelRequested, qualityController,
+            &MirroringQualityController::setManualLevel);
 
     // Touchpad
     connect(protocolHandler, &ProtocolHandler::mouseMoved, inputController, &InputController::onMouseMove);
@@ -69,7 +101,11 @@ MainWindow::MainWindow(QWidget *parent)
             [this]() { preparePage->showQR(connectionManager->connectionUrl()); });
     connect(mainPage->getWirelessConnectButton(), &QPushButton::clicked, this, [this]() {
         // The phone asks the user for screen capture permission, then replies with "mirroring_started".
-        sendJson({{"command", "init_mirroring_request"}});
+        // The starting quality is picked from the network round-trip time measured so far.
+        QJsonObject request = qualityController->prepareSession(connectionManager->smoothedRttMs());
+        request["command"] = "init_mirroring_request";
+        request["protocolVersion"] = Protocol::kMirroringProtocolVersion;
+        sendJson(request);
     });
 
     connectionManager->startListening();
@@ -85,6 +121,70 @@ void MainWindow::showEvent(QShowEvent *event)
 {
     QMainWindow::showEvent(event);
     applyAcrylicBlur();
+    updateResizability();
+}
+
+void MainWindow::updateResizability()
+{
+    // The setup page has a fixed, hand-placed layout, so the window must not be resized there.
+    setResizable(ui->stackedWidget->currentWidget() != preparePage);
+}
+
+bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, qintptr *result)
+{
+    // Windows still carries out "maximize"/"size" commands sent to a window without a maximize box,
+    // so they are swallowed here while the window is locked.
+    const MSG *msg = static_cast<MSG *>(message);
+    if (!resizable && msg->message == WM_SYSCOMMAND) {
+        const WPARAM command = msg->wParam & 0xFFF0; // the low 4 bits are used internally by Windows
+        if (command == SC_MAXIMIZE || command == SC_SIZE) {
+            *result = 0;
+            return true;
+        }
+    }
+    return QMainWindow::nativeEvent(eventType, message, result);
+}
+
+void MainWindow::setResizable(bool resizable)
+{
+    this->resizable = resizable;
+
+    if (resizable) {
+        setMinimumSize(0, 0);
+        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    } else {
+        if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen)) {
+            showNormal();
+        }
+        setFixedSize(setupSize);
+    }
+
+    // Before the window exists there is nothing to change; showEvent() calls this again.
+    if (testAttribute(Qt::WA_WState_Created)) {
+        setNativeResizeFrame(resizable);
+    }
+}
+
+void MainWindow::setNativeResizeFrame(bool enabled)
+{
+    // A fixed size alone only stops dragging the edges: Windows would still maximize the window
+    // (button, title bar double-click, Win+Up, snapping). So the maximize box and the resize border
+    // are removed from the native window style too.
+    const HWND hwnd = reinterpret_cast<HWND>(winId());
+    const LONG_PTR resizeBits = WS_MAXIMIZEBOX | WS_THICKFRAME;
+    LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+    style = enabled ? (style | resizeBits) : (style & ~resizeBits);
+
+    // The resize border takes up room inside the window, so changing it would shrink or grow the
+    // content area. Resize the outer window so the content keeps exactly its current size.
+    RECT rect;
+    GetClientRect(hwnd, &rect);
+    AdjustWindowRectExForDpi(&rect, static_cast<DWORD>(style), FALSE,
+                             static_cast<DWORD>(GetWindowLongPtrW(hwnd, GWL_EXSTYLE)), GetDpiForWindow(hwnd));
+
+    SetWindowLongPtrW(hwnd, GWL_STYLE, style);
+    SetWindowPos(hwnd, nullptr, 0, 0, rect.right - rect.left, rect.bottom - rect.top,
+                 SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 void MainWindow::applyAcrylicBlur()
@@ -125,10 +225,20 @@ void MainWindow::onClientDisconnected()
     hideMirroringUI();
 }
 
-void MainWindow::showMirroringUI()
+void MainWindow::showMirroringUI(const QJsonObject &info)
 {
+    // A v2 phone reports its stream; a v1 phone sends only the event name.
+    const int protocolVersion = info.value("protocolVersion").toInt(1);
+    const QSize videoSize(info.value("width").toInt(), info.value("height").toInt());
+
     screenMirrorManager->start();
+    qualityController->startSession(protocolVersion);
+    screenMirrorView->setQualityInfo(qualityController->describe(), qualityController->currentLevel(),
+                                     qualityController->isAutomatic());
+    screenMirrorView->startSession(videoSize);
     screenMirrorView->show();
+    screenMirrorView->raise();
+    screenMirrorView->activateWindow();
 }
 
 void MainWindow::hideMirroringUI()
@@ -138,6 +248,7 @@ void MainWindow::hideMirroringUI()
     if (screenMirrorManager->getIsActive()) {
         sendJson({{"command", "stop_mirroring"}});
         screenMirrorManager->stop();
+        qualityController->stopSession();
     }
     if (screenMirrorView->isVisible()) {
         screenMirrorView->close();

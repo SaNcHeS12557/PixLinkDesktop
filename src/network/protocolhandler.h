@@ -1,6 +1,8 @@
 #ifndef PROTOCOLHANDLER_H
 #define PROTOCOLHANDLER_H
 
+#include "network/protocoldefs.h"
+
 #include <QJsonObject>
 #include <QObject>
 
@@ -18,16 +20,17 @@ public slots:
     void parseBinaryData(const QByteArray &message);
 
 signals:
-    void mirroringStarted();
+    // info is the whole event message; a v2 phone adds protocolVersion, width, height, fps, bitrateKbps.
+    void mirroringStarted(const QJsonObject &info);
     void mirroringStopped();
+    void mirroringConfigApplied(const QJsonObject &info);
     void clipboardDataReceived(const QJsonObject &data);
 
     void mouseMoved(qint16 dx, qint16 dy);
     void mouseScrolled(qint16 dx, qint16 dy);
     void mouseClicked(quint8 buttonType);
 
-    // One H.264 packet, without the command byte.
-    void videoFrameReceived(const QByteArray &frameData);
+    void videoPacketReceived(const Protocol::VideoPacket &packet);
 };
 
 #endif // PROTOCOLHANDLER_H

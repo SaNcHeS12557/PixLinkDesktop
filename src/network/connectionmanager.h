@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+class QTimer;
 class QWebSocket;
 class QWebSocketServer;
 
@@ -21,19 +22,27 @@ public:
     // Address the phone should connect to (shown as the QR code).
     QString connectionUrl() const;
 
+    // Round-trip time to the phone, smoothed over the last few pings. -1 until the first answer.
+    double smoothedRttMs() const;
+
 signals:
     void clientConnected();
     void clientDisconnected();
     void textMessageReceived(const QString &message);
     void binaryMessageReceived(const QByteArray &data);
+    // Raw round-trip time of one ping, in milliseconds.
+    void rttMeasured(double ms);
 
 private slots:
     void onNewConnection();
     void onClientSocketDisconnected();
+    void onPong(quint64 elapsedMs);
 
 private:
     QWebSocketServer *webSocketServer = nullptr;
     QWebSocket *clientSocket = nullptr;
+    QTimer *pingTimer = nullptr;
+    double rttEstimateMs = -1;
 
     static QString configuredUrl();
     static QString localIp();

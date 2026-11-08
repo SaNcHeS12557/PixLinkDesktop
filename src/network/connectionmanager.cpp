@@ -5,16 +5,46 @@
 #include <QFileInfo>
 #include <QNetworkInterface>
 #include <QSettings>
+#include <QTimer>
 #include <QWebSocket>
 #include <QWebSocketServer>
 
 #include <algorithm>
 
+namespace {
+constexpr int kPingIntervalMs = 1000;
+constexpr double kRttSmoothing = 0.3; // weight of the newest sample
+} // namespace
+
 ConnectionManager::ConnectionManager(QObject *parent)
     : QObject(parent)
     , webSocketServer(new QWebSocketServer(QStringLiteral("PixLink server"), QWebSocketServer::NonSecureMode, this))
+    , pingTimer(new QTimer(this))
 {
     connect(webSocketServer, &QWebSocketServer::newConnection, this, &ConnectionManager::onNewConnection);
+
+    // Pings share the TCP connection with the video stream, so when the link is congested they wait
+    // behind the video data and the measured round-trip time rises. That makes the RTT a direct
+    // measure of how loaded the connection is, not only of the Wi-Fi distance.
+    // WebSocket clients answer pings automatically (OkHttp on the phone does).
+    pingTimer->setInterval(kPingIntervalMs);
+    connect(pingTimer, &QTimer::timeout, this, [this]() {
+        if (clientSocket && clientSocket->isValid()) {
+            clientSocket->ping();
+        }
+    });
+}
+
+double ConnectionManager::smoothedRttMs() const
+{
+    return rttEstimateMs;
+}
+
+void ConnectionManager::onPong(quint64 elapsedMs)
+{
+    const double ms = static_cast<double>(elapsedMs);
+    rttEstimateMs = rttEstimateMs < 0 ? ms : (kRttSmoothing * ms + (1.0 - kRttSmoothing) * rttEstimateMs);
+    emit rttMeasured(ms);
 }
 
 bool ConnectionManager::startListening(quint16 port)
@@ -59,6 +89,11 @@ void ConnectionManager::onNewConnection()
     connect(clientSocket, &QWebSocket::textMessageReceived, this, &ConnectionManager::textMessageReceived);
     connect(clientSocket, &QWebSocket::binaryMessageReceived, this, &ConnectionManager::binaryMessageReceived);
     connect(clientSocket, &QWebSocket::disconnected, this, &ConnectionManager::onClientSocketDisconnected);
+    connect(clientSocket, &QWebSocket::pong, this, &ConnectionManager::onPong);
+
+    rttEstimateMs = -1;
+    pingTimer->start();
+    clientSocket->ping();
 
     emit clientConnected();
 }
@@ -66,6 +101,8 @@ void ConnectionManager::onNewConnection()
 void ConnectionManager::onClientSocketDisconnected()
 {
     qDebug() << "ConnectionManager: client disconnected";
+    pingTimer->stop();
+    rttEstimateMs = -1;
     if (clientSocket) {
         clientSocket->deleteLater();
         clientSocket = nullptr;
